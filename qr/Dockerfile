@@ -6,6 +6,6 @@ RUN apt-get update -qq
 
 ADD ./qrserver /opt/qrserver
 
-EXPORT 8080
+EXPOSE 8080
 
 CMD /opt/qrserver
