@@ -4,24 +4,26 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dotcloud/docker"
+	dockerc "github.com/fsouza/go-dockerclient"
 	"log"
 )
-import dockerc "github.com/fsouza/go-dockerclient"
 
 var _ = log.Print // for debugging, remove
 
 type Lib struct {
-	cfg     map[string]Service
+	cfg     ServiceMap
 	address string
 	client  *dockerc.Client
+	pids    PidLib
 }
 
-func NewLib(cfg map[string]Service, address string) Lib {
+func NewLib(cfg map[string]Service, address string, pidPath string) Lib {
 	c, err := dockerc.NewClient(address)
 	if err != nil {
 		panic(err)
 	}
-	return Lib{cfg: cfg, address: address, client: c}
+	pids := NewPidLib(pidPath)
+	return Lib{cfg: cfg, address: address, client: c, pids: pids}
 }
 
 func (l *Lib) Start(svcName string) error {
@@ -29,7 +31,7 @@ func (l *Lib) Start(svcName string) error {
 	ports := l.cfg[svcName].Ports
 	env := l.cfg[svcName].Env
 
-	if hasPid(svcName) {
+	if l.pids.hasPid(svcName) {
 		return errors.New("Service " + svcName + " already running")
 	}
 
@@ -62,18 +64,18 @@ func (l *Lib) Start(svcName string) error {
 	if err != nil {
 		return err
 	}
-	if err = setPid(svcName, container.ID); err != nil {
+	if err = l.pids.setPid(svcName, container.ID); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (l *Lib) Stop(svcName string) error {
-	if !hasPid(svcName) {
+	if !l.pids.hasPid(svcName) {
 		return errors.New("Service not running")
 	}
 
-	id, err := getPid(svcName)
+	id, err := l.pids.getPid(svcName)
 	if err != nil {
 		return err
 	}
@@ -82,7 +84,7 @@ func (l *Lib) Stop(svcName string) error {
 		return err
 	}
 
-	if err = removePid(svcName); err != nil {
+	if err = l.pids.removePid(svcName); err != nil {
 		return err
 	}
 	return nil
@@ -91,7 +93,7 @@ func (l *Lib) startDeps(svcName string) error {
 	deps := l.cfg[svcName].Deps
 
 	for _, svcName := range deps {
-		if !hasPid(svcName) {
+		if !l.pids.hasPid(svcName) {
 
 			if err := l.Start(svcName); err != nil {
 				return err
@@ -106,7 +108,7 @@ func (l *Lib) getContainerName(svcName string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	id, err := getPid(svcName)
+	id, err := l.pids.getPid(svcName)
 	if err != nil {
 		return "", err
 	}
@@ -143,7 +145,7 @@ func (l *Lib) getLinks(svcName string) ([]string, error) {
 	deps := l.cfg[svcName].Deps
 	links := make([]string, 0, 10)
 	for _, svcName := range deps {
-		if !hasPid(svcName) {
+		if !l.pids.hasPid(svcName) {
 			return links, errors.New("Dep not running: " + svcName)
 		}
 		name, err := l.getContainerName(svcName)

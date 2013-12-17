@@ -8,17 +8,25 @@ import (
 
 var _ = log.Print // for debugging, remove
 
-const DOCKIT_RUN_PATH string = "/var/run/dockit-containers"
+type PidLib struct {
+	path string
+}
 
-func hasPid(svcName string) bool {
-	if _, err := os.Stat(DOCKIT_RUN_PATH + "/" + svcName); err == nil {
+func NewPidLib(path string) PidLib {
+	os.MkdirAll(path, 0700)
+
+	return PidLib{path: path}
+}
+
+func (l *PidLib) hasPid(svcName string) bool {
+	if _, err := os.Stat(l.path + "/" + svcName); err == nil {
 		return true
 	}
 	return false
 }
 
-func getPid(svcName string) (string, error) {
-	b, err := ioutil.ReadFile(DOCKIT_RUN_PATH + "/" + svcName)
+func (l *PidLib) getPid(svcName string) (string, error) {
+	b, err := ioutil.ReadFile(l.path + "/" + svcName)
 	if err != nil {
 		return "", err
 	}
@@ -26,13 +34,13 @@ func getPid(svcName string) (string, error) {
 	return string(b[:]), nil
 }
 
-func setPid(svcName string, id string) error {
+func (l *PidLib) setPid(svcName string, id string) error {
 	b := []byte(id)
 
-	err := ioutil.WriteFile(DOCKIT_RUN_PATH+"/"+svcName, b, 0644)
+	err := ioutil.WriteFile(l.path+"/"+svcName, b, 0644)
 
 	return err
 }
-func removePid(svcName string) error {
-	return os.Remove(DOCKIT_RUN_PATH + "/" + svcName)
+func (l *PidLib) removePid(svcName string) error {
+	return os.Remove(l.path + "/" + svcName)
 }

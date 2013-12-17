@@ -4,27 +4,30 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 )
 
 var _ = log.Print
 
 func main() {
-	os.MkdirAll(DOCKIT_RUN_PATH, 0700)
 
 	config := flag.String("config", "config.json", "json config")
 	address := flag.String("address", "unix:///var/run/docker.sock", "docker address")
+	pidPath := flag.String("pidPath", "/var/run/dockit-containers", "path to store pids in")
 	service := flag.String("service", "", "service name")
 	start := flag.Bool("start", false, "start service")
 	stop := flag.Bool("stop", false, "stop service")
 	flag.Parse()
 
-	cfg, err := parseConfig(*config)
+	cfg, err := parseConfigFile(*config)
 	if err != nil {
 		panic(err)
 	}
+	if *service == "" {
+		flag.Usage()
+		return
+	}
 
-	lib := NewLib(cfg, *address)
+	lib := NewLib(cfg, *address, *pidPath)
 
 	svcName := *service
 
@@ -41,5 +44,7 @@ func main() {
 			return
 		}
 		fmt.Println(svcName + " Stopped")
+	default:
+		flag.Usage()
 	}
 }

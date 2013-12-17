@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
-	"os"
 )
 
 var _ = log.Print // for debugging, remove
@@ -15,16 +15,23 @@ type Service struct {
 	Env   map[string]string
 }
 
-func parseConfig(file string) (map[string]Service, error) {
-	var cfg = make(map[string]Service)
+type ServiceMap map[string]Service
 
-	configFile, err := os.Open(file)
+func parseConfigFile(file string) (ServiceMap, error) {
+	var cfg = make(ServiceMap)
+
+	b, err := ioutil.ReadFile(file)
 	if err != nil {
 		return cfg, err
 	}
 
-	jsonParser := json.NewDecoder(configFile)
-	if err = jsonParser.Decode(&cfg); err != nil {
+	return parseConfigData(b)
+}
+
+func parseConfigData(b []byte) (ServiceMap, error) {
+	var cfg = make(ServiceMap)
+
+	if err := json.Unmarshal(b, &cfg); err != nil {
 		return cfg, err
 	}
 
