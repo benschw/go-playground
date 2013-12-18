@@ -9,7 +9,7 @@ This is not supposed to be a general-purpose tool, but an example of how wiring 
 - Easy to maintain: I'm assuming you were doing this work in bash before
 - Portable: really, we're only talking about Linux with Docker, so a single statically linked binary is as portable as you can get
 
-So get some ideas here (or use this as a starting point) and go build your own toolkit so codify (no pun intended) the conventions, opinions, 
+So get some ideas here (or use this as a starting point) and go build your own toolkit to codify (no pun intended) the conventions, opinions, 
 and nuances of your environment in a format which you can maintain.
 
 ## Usage
