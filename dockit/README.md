@@ -14,18 +14,21 @@ and nuances of your environment in a format which you can maintain.
 
 ## Usage
 
-By default, dockit looks for a config.json file in your current directory, connects using unit:///var/run/docker.sock, and keeps track
+By default, `dockit` looks for a config.json file in your current directory, connects using unix:///var/run/docker.sock, and keeps track
 of running containers with "pid" files in /var/run/dockit-containers.
-
 
 You can define services for your environment in the config file, and specify ports, environment variables, and dependancy services 
 (which are translated into links.)
 
-### Usage / Example
- 
-A webapp ("WebApp" service) container which registers itself with a hipache/redis ("Hipache" service) container.
+### Usage / Example Environment
 
-#### Config.json
+Included in this repo, is an example config to build an environment with a webapp fronted by a reverse proxy (Hipache.)
+The config specifies that the webapp ("WebApp" service) container should link in the hipache/redis ("Hipache" service) container 
+and which ports to expose (in the link and externally). It also pushes in an environment variable to the webapp to use when 
+registering with Hipache. The webapp entry point script (included in `webapp-ex`) uses the link to register the webapp with 
+Hipache and to deregister on shutdown.
+
+Here is a copy of `config.json` from our example environment:
 
 	{"Hipache" : {
 		"Image" : "stackbrew/hipache",
