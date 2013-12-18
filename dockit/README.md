@@ -22,11 +22,16 @@ You can define services for your environment in the config file, and specify por
 
 ### Usage / Example Environment
 
-Included in this repo, is an example config to build an environment with a webapp fronted by a reverse proxy (Hipache.)
-The config specifies that the webapp ("WebApp" service) container should link in the hipache/redis ("Hipache" service) container 
-and which ports to expose (in the link and externally). It also pushes in an environment variable to the webapp to use when 
-registering with Hipache. The webapp entry point script (included in `webapp-ex`) uses the link to register the webapp with 
-Hipache and to deregister on shutdown.
+Included in this repo, is an example config to build an environment with a webapp (the included `webapp-ex/`) fronted by a reverse proxy (Hipache.)
+
+
+The config specifies: 
+
+- the webapp ("WebApp" service) container should link in the hipache/redis ("Hipache" service) container 
+- which ports to expose (in the link and externally)
+- an environment variable for the webapp to use when registering with Hipache
+
+The webapp entry point script (included in `webapp-ex`) uses the link and host env var to register the webapp with Hipache and to deregister on shutdown.
 
 Here is a copy of `config.json` from our example environment:
 
