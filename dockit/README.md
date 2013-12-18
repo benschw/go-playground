@@ -61,7 +61,7 @@ Here is a copy of `config.json` from our example environment:
 This will start up the `WebApp` service (bringing `Hipache` up too as it is a dependency) and register the private ip:port of 
 the `WebApp` container with Hipache (see `webapp-ex/start.sh`) under the name `webapp.local`.
 
-add `127.0.0.1  webapp.local` to your `/etc/hosts` file and the example webapp should be available on port 80.
+add `127.0.0.1  webapp.local` to your `/etc/hosts` file and the example webapp should be available on at [http://webapp.local](http://webapp.local)
 
 
 #### Stop the example
@@ -72,4 +72,4 @@ This will only stop the `WebApp` container (and deregister from Hipache); Hipach
 
 	sudo ./dockit -service Hipache -stop
 
-Note the containers are still there in a "stopped" state, and that a subsequent `-start` will run a new instance.
+Note the containers are still there in a "stopped" state, and that a subsequent `-start` will run new instances.
