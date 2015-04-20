@@ -16,7 +16,7 @@ func (lb *StaticAddressGetter) GetAddress(address string) (dns.Address, error) {
 	return lb.Val, nil
 }
 
-func TestDemoEndpoint(t *testing.T) {
+func TestGreetingEndpoint(t *testing.T) {
 	// given
 	expectedGreeting := "\"hello world\""
 
