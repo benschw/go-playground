@@ -23,9 +23,7 @@ func TestDiscover(t *testing.T) {
 	found := Discover(lb, "")
 
 	// then
-
 	if found != expected {
 		t.Errorf("\"%s\" not equal to \"%s\"", found, expected)
 	}
-
 }

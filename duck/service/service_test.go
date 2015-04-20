@@ -18,7 +18,6 @@ func (lb *StaticAddressGetter) GetAddress(address string) (dns.Address, error) {
 
 func TestDemoEndpoint(t *testing.T) {
 	// given
-
 	expectedGreeting := "\"hello world\""
 
 	host := "localhost"
@@ -37,5 +36,4 @@ func TestDemoEndpoint(t *testing.T) {
 	if expectedGreeting != string(greeting[:]) {
 		t.Errorf("expected '%s', got '%s'", expectedGreeting, greeting)
 	}
-
 }
